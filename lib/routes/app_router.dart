@@ -12,11 +12,24 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/quiz',
-      builder: (_, __) => const QuizScreen(),
+      builder: (_, state) => QuizScreen(
+        category: state.extra
+        as QuizCategory,
+      ),
     ),
     GoRoute(
       path: '/result',
-      builder: (_, __) => const ResultScreen(),
+      builder: (_, state) {
+        final data =
+        state.extra
+        as Map<String, dynamic>;
+
+        return ResultScreen(
+          score: data['score'],
+          totalQuestions:
+          data['total'],
+        );
+      },
     ),
   ],
 );
