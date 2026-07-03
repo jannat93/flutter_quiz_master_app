@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../models/quiz_category.dart';
+import '../widgets/option_tile.dart';
 
 class QuizScreen extends StatefulWidget {
   final QuizCategory category;

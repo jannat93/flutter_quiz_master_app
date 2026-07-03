@@ -55,4 +55,50 @@ class StorageService {
     final prefs = await _prefs;
     return prefs.getStringList('history') ?? [];
   }
+  static Future<void> saveQuizResult(
+      int score,
+      int totalQuestions,
+      ) async {
+    final prefs = await _prefs;
+
+    final attempts =
+        prefs.getInt('totalAttempts') ?? 0;
+
+    await prefs.setInt(
+      'totalAttempts',
+      attempts + 1,
+    );
+
+    final highest =
+        prefs.getInt('highestScore') ?? 0;
+
+    if (score > highest) {
+      await prefs.setInt(
+        'highestScore',
+        score,
+      );
+    }
+
+    await prefs.setInt(
+      'lastScore',
+      score,
+    );
+
+    final history =
+        prefs.getStringList('history') ?? [];
+
+    history.insert(
+      0,
+      '$score/$totalQuestions',
+    );
+
+    if (history.length > 10) {
+      history.removeLast();
+    }
+
+    await prefs.setStringList(
+      'history',
+      history,
+    );
+  }
 }
