@@ -100,5 +100,44 @@ class StorageService {
       'history',
       history,
     );
+
+  }
+  static Future<void> saveDetailedAttempt({
+    required String category,
+    required int score,
+    required int total,
+    required List<Map<String, dynamic>> answers,
+  }) async {
+    final prefs = await _prefs;
+
+    final attempts =
+        prefs.getStringList('attemptDetails') ?? [];
+
+    final attempt = {
+      'category': category,
+      'score': score,
+      'total': total,
+      'date': DateTime.now().toString(),
+      'answers': answers,
+    };
+
+    attempts.insert(
+      0,
+      jsonEncode(attempt),
+    );
+
+    await prefs.setStringList(
+      'attemptDetails',
+      attempts,
+    );
+  }
+
+  static Future<List<String>> getDetailedHistory() async {
+    final prefs = await _prefs;
+
+    return prefs.getStringList(
+      'attemptDetails',
+    ) ??
+        [];
   }
 }

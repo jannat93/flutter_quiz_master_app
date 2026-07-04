@@ -13,21 +13,30 @@ class QuizScreen extends StatefulWidget {
   });
 
   @override
-  State<QuizScreen> createState() =>
-      _QuizScreenState();
+  State<QuizScreen> createState() => _QuizScreenState();
 }
 
-class _QuizScreenState
-    extends State<QuizScreen> {
+class _QuizScreenState extends State<QuizScreen> {
   int currentIndex = 0;
   int score = 0;
 
   String? selectedAnswer;
 
+  final List<Map<String, dynamic>> reviewAnswers = [];
+
   void nextQuestion() {
     final currentQuestion =
-    widget.category.questions[
-    currentIndex];
+    widget.category.questions[currentIndex];
+
+    reviewAnswers.add({
+      'question': currentQuestion.questionText,
+      'selectedAnswer': selectedAnswer,
+      'correctAnswer':
+      currentQuestion.correctAnswer,
+      'isCorrect':
+      selectedAnswer ==
+          currentQuestion.correctAnswer,
+    });
 
     if (selectedAnswer ==
         currentQuestion.correctAnswer) {
@@ -35,8 +44,7 @@ class _QuizScreenState
     }
 
     if (currentIndex <
-        widget.category.questions.length -
-            1) {
+        widget.category.questions.length - 1) {
       setState(() {
         currentIndex++;
         selectedAnswer = null;
@@ -46,8 +54,10 @@ class _QuizScreenState
         '/result',
         extra: {
           'score': score,
-          'total': widget.category.questions.length,
+          'total':
+          widget.category.questions.length,
           'category': widget.category,
+          'reviews': reviewAnswers,
         },
       );
     }
@@ -56,16 +66,19 @@ class _QuizScreenState
   @override
   Widget build(BuildContext context) {
     final question =
-    widget.category.questions[
-    currentIndex];
+    widget.category.questions[currentIndex];
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.category.name),
+        centerTitle: true,
       ),
       body: Padding(
         padding:
-        const EdgeInsets.all(16),
+        const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         child: Column(
           crossAxisAlignment:
           CrossAxisAlignment.start,
@@ -74,29 +87,40 @@ class _QuizScreenState
               'Question ${currentIndex + 1} of ${widget.category.questions.length}',
               style: const TextStyle(
                 fontSize: 18,
+                fontWeight: FontWeight.w600,
               ),
             ),
 
             const SizedBox(height: 10),
 
-            LinearProgressIndicator(
-              value: (currentIndex + 1) /
-                  widget.category
-                      .questions
-                      .length,
+            ClipRRect(
+              borderRadius:
+              BorderRadius.circular(20),
+              child: LinearProgressIndicator(
+                minHeight: 8,
+                value: (currentIndex + 1) /
+                    widget
+                        .category
+                        .questions
+                        .length,
+              ),
             ),
 
             const SizedBox(height: 25),
 
             Card(
+              elevation: 3,
+              shape:
+              RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.circular(16),
+              ),
               child: Padding(
                 padding:
-                const EdgeInsets.all(
-                    16),
+                const EdgeInsets.all(18),
                 child: Text(
                   question.questionText,
-                  style:
-                  const TextStyle(
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight:
                     FontWeight.bold,
@@ -114,20 +138,25 @@ class _QuizScreenState
                 itemBuilder:
                     (context, index) {
                   final option =
-                  question
-                      .options[index];
+                  question.options[index];
 
-                  return OptionTile(
-                    option: option,
-                    isSelected:
-                    selectedAnswer ==
-                        option,
-                    onTap: () {
-                      setState(() {
-                        selectedAnswer =
-                            option;
-                      });
-                    },
+                  return Padding(
+                    padding:
+                    const EdgeInsets.only(
+                      bottom: 10,
+                    ),
+                    child: OptionTile(
+                      option: option,
+                      isSelected:
+                      selectedAnswer ==
+                          option,
+                      onTap: () {
+                        setState(() {
+                          selectedAnswer =
+                              option;
+                        });
+                      },
+                    ),
                   );
                 },
               ),
@@ -135,10 +164,10 @@ class _QuizScreenState
 
             SizedBox(
               width: double.infinity,
+              height: 55,
               child: ElevatedButton(
                 onPressed:
-                selectedAnswer ==
-                    null
+                selectedAnswer == null
                     ? null
                     : nextQuestion,
                 child: Text(
@@ -148,8 +177,8 @@ class _QuizScreenState
                           .questions
                           .length -
                           1
-                      ? 'Finish'
-                      : 'Next',
+                      ? 'Finish Quiz'
+                      : 'Next Question',
                 ),
               ),
             ),

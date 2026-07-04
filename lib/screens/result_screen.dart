@@ -8,19 +8,23 @@ class ResultScreen extends StatefulWidget {
   final int score;
   final int totalQuestions;
   final QuizCategory category;
+  final List<Map<String, dynamic>> reviews;
 
   const ResultScreen({
     super.key,
     required this.score,
     required this.totalQuestions,
     required this.category,
+    required this.reviews,
   });
 
   @override
-  State<ResultScreen> createState() => _ResultScreenState();
+  State<ResultScreen> createState() =>
+      _ResultScreenState();
 }
 
-class _ResultScreenState extends State<ResultScreen> {
+class _ResultScreenState
+    extends State<ResultScreen> {
   bool saved = false;
 
   @override
@@ -34,12 +38,21 @@ class _ResultScreenState extends State<ResultScreen> {
         widget.score,
         widget.totalQuestions,
       );
+
+      StorageService.saveDetailedAttempt(
+        category: widget.category.name,
+        score: widget.score,
+        total: widget.totalQuestions,
+        answers: widget.reviews,
+      );
     }
   }
 
   String getPerformanceMessage() {
     final percentage =
-        (widget.score / widget.totalQuestions) * 100;
+        (widget.score /
+            widget.totalQuestions) *
+            100;
 
     if (percentage >= 80) {
       return "Excellent Work! 🎉";
@@ -53,19 +66,24 @@ class _ResultScreenState extends State<ResultScreen> {
   @override
   Widget build(BuildContext context) {
     final wrongAnswers =
-        widget.totalQuestions - widget.score;
+        widget.totalQuestions -
+            widget.score;
 
     final percentage =
-    ((widget.score / widget.totalQuestions) * 100)
+    ((widget.score /
+        widget.totalQuestions) *
+        100)
         .toStringAsFixed(0);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz Result'),
+        title:
+        const Text('Quiz Result'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding:
+        const EdgeInsets.all(20),
         child: Column(
           children: [
             const SizedBox(height: 10),
@@ -80,10 +98,13 @@ class _ResultScreenState extends State<ResultScreen> {
 
             Text(
               getPerformanceMessage(),
-              textAlign: TextAlign.center,
-              style: const TextStyle(
+              textAlign:
+              TextAlign.center,
+              style:
+              const TextStyle(
                 fontSize: 24,
-                fontWeight: FontWeight.bold,
+                fontWeight:
+                FontWeight.bold,
               ),
             ),
 
@@ -91,9 +112,11 @@ class _ResultScreenState extends State<ResultScreen> {
 
             Text(
               '${widget.score}/${widget.totalQuestions}',
-              style: const TextStyle(
+              style:
+              const TextStyle(
                 fontSize: 48,
-                fontWeight: FontWeight.bold,
+                fontWeight:
+                FontWeight.bold,
               ),
             ),
 
@@ -103,8 +126,10 @@ class _ResultScreenState extends State<ResultScreen> {
               '$percentage%',
               style: TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context)
+                fontWeight:
+                FontWeight.w600,
+                color:
+                Theme.of(context)
                     .colorScheme
                     .primary,
               ),
@@ -114,44 +139,67 @@ class _ResultScreenState extends State<ResultScreen> {
 
             Card(
               child: ListTile(
-                leading: const Icon(Icons.quiz),
-                title: const Text('Total Questions'),
+                leading:
+                const Icon(
+                  Icons.quiz,
+                ),
+                title: const Text(
+                  'Total Questions',
+                ),
                 trailing: Text(
-                  widget.totalQuestions.toString(),
+                  widget
+                      .totalQuestions
+                      .toString(),
                 ),
               ),
             ),
 
             Card(
               child: ListTile(
-                leading: const Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
+                leading:
+                const Icon(
+                  Icons
+                      .check_circle,
+                  color:
+                  Colors.green,
                 ),
-                title: const Text('Correct Answers'),
+                title: const Text(
+                  'Correct Answers',
+                ),
                 trailing: Text(
-                  widget.score.toString(),
+                  widget.score
+                      .toString(),
                 ),
               ),
             ),
 
             Card(
               child: ListTile(
-                leading: const Icon(
+                leading:
+                const Icon(
                   Icons.cancel,
-                  color: Colors.red,
+                  color:
+                  Colors.red,
                 ),
-                title: const Text('Wrong Answers'),
+                title: const Text(
+                  'Wrong Answers',
+                ),
                 trailing: Text(
-                  wrongAnswers.toString(),
+                  wrongAnswers
+                      .toString(),
                 ),
               ),
             ),
 
             Card(
               child: ListTile(
-                leading: const Icon(Icons.score),
-                title: const Text('Final Score'),
+                leading:
+                const Icon(
+                  Icons.score,
+                ),
+                title: const Text(
+                  'Final Score',
+                ),
                 trailing: Text(
                   '${widget.score}/${widget.totalQuestions}',
                 ),
@@ -160,24 +208,68 @@ class _ResultScreenState extends State<ResultScreen> {
 
             Card(
               child: ListTile(
-                leading: const Icon(Icons.percent),
-                title: const Text('Percentage'),
+                leading:
+                const Icon(
+                  Icons.percent,
+                ),
+                title: const Text(
+                  'Percentage',
+                ),
                 trailing: Text(
                   '$percentage%',
                 ),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
 
             SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
+              width:
+              double.infinity,
+              height: 55,
+              child:
+              ElevatedButton.icon(
+                onPressed: () {
+                  context.push(
+                    '/history',
+                    extra: {
+                      'category':
+                      widget
+                          .category
+                          .name,
+                      'score':
+                      widget.score,
+                      'total': widget
+                          .totalQuestions,
+                      'answers':
+                      widget.reviews,
+                    },
+                  );
+                },
+                icon: const Icon(
+                  Icons.visibility,
+                ),
+                label: const Text(
+                  'Review Answers',
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            SizedBox(
+              width:
+              double.infinity,
+              height: 55,
+              child:
+              ElevatedButton.icon(
                 onPressed: () {
                   context.go('/');
                 },
-                icon: const Icon(Icons.home),
+                icon:
+                const Icon(
+                  Icons.home,
+                ),
                 label: const Text(
                   'Back To Home',
                 ),
@@ -187,16 +279,22 @@ class _ResultScreenState extends State<ResultScreen> {
             const SizedBox(height: 12),
 
             SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: OutlinedButton.icon(
+              width:
+              double.infinity,
+              height: 55,
+              child:
+              OutlinedButton.icon(
                 onPressed: () {
                   context.go(
                     '/quiz',
-                    extra: widget.category,
+                    extra:
+                    widget.category,
                   );
                 },
-                icon: const Icon(Icons.refresh),
+                icon:
+                const Icon(
+                  Icons.refresh,
+                ),
                 label: const Text(
                   'Play Again',
                 ),

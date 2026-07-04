@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quiz_master/theme/app_theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/theme_provider.dart';
 import 'routes/app_router.dart';
@@ -9,6 +10,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final themeProvider = ThemeProvider();
+  final prefs =
+  // await SharedPreferences.getInstance();
+  // await prefs.clear();
   await themeProvider.loadTheme();
 
   runApp(

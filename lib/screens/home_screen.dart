@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int attempts = 0;
   int highestScore = 0;
   int lastScore = 0;
+
   List<String> history = [];
 
   bool isLoading = true;
@@ -40,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await StorageService.getLastScore();
 
     final loadedHistory =
-    await StorageService.getHistory();
+    await StorageService.getDetailedHistory();
 
     if (!mounted) return;
 
@@ -68,23 +71,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(90),
+        preferredSize: const Size.fromHeight(100),
         child: Container(
-          margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          margin: const EdgeInsets.fromLTRB(
+            2,
+            2,
+            2,
+            0,
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 12,
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            color: Theme.of(context)
-                .colorScheme
-                .surfaceContainerHighest,
+
+            color: const Color(0xFFEAD3CB),
+
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
+                color: const Color(
+                  0xFF845460,
+                ).withOpacity(0.15),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
@@ -94,17 +104,37 @@ class _HomeScreenState extends State<HomeScreen> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: const LinearGradient(
+                    borderRadius:
+                    BorderRadius.circular(16),
+
+                    gradient:
+                    const LinearGradient(
                       colors: [
-                        Color(0xFF10B981),
-                        Color(0xFF06B6D4),
+                        Color(0xFF845460),
+                        Color(0xFF5FA4B8),
                       ],
                     ),
                   ),
-                  child: const Icon(
-                    Icons.quiz_rounded,
-                    color: Colors.white,
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 15,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                 ),
 
@@ -123,13 +153,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: 20,
                           fontWeight:
                           FontWeight.bold,
+                          color: Color(
+                            0xFF2B4F60,
+                          ),
                         ),
                       ),
                       Text(
                         'Ready for a challenge?',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey,
+                          color: Color(
+                            0xFF845460,
+                          ),
                         ),
                       ),
                     ],
@@ -140,9 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   decoration: BoxDecoration(
                     borderRadius:
                     BorderRadius.circular(14),
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primaryContainer,
+                    color: const Color(
+                      0xFFBDC7C9,
+                    ),
                   ),
                   child: IconButton(
                     onPressed: () {
@@ -152,6 +187,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       themeProvider.isDark
                           ? Icons.light_mode_rounded
                           : Icons.dark_mode_rounded,
+                      color: const Color(
+                        0xFF2B4F60,
+                      ),
                     ),
                   ),
                 ),
@@ -160,26 +198,30 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+
       body: RefreshIndicator(
         onRefresh: loadStats,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding:
+          const EdgeInsets.all(16),
           children: [
-            // Welcome Banner
             Container(
-              padding: const EdgeInsets.all(20),
+              padding:
+              const EdgeInsets.all(
+                20,
+              ),
               decoration: BoxDecoration(
                 borderRadius:
-                BorderRadius.circular(20),
-                gradient: LinearGradient(
+                BorderRadius.circular(
+                  20,
+                ),
+                gradient: const LinearGradient(
                   colors: [
-                    Theme.of(context)
-                        .colorScheme
-                        .primary,
-                    Theme.of(context)
-                        .colorScheme
-                        .secondary,
+                    Color(0xFF845460),
+                    Color(0xFF5FA4B8),
                   ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
               ),
               child: const Column(
@@ -189,7 +231,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     'Welcome to Quiz Master!',
                     style: TextStyle(
-                      color: Colors.red,
+                      color: Colors.white,
                       fontSize: 24,
                       fontWeight:
                       FontWeight.bold,
@@ -199,7 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Text(
                     'Test your knowledge and improve your learning skills.',
                     style: TextStyle(
-                      color: Colors.redAccent,
+                      color:
+                      Colors.white70,
                     ),
                   ),
                 ],
@@ -208,7 +251,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 24),
 
-            // Statistics
             const Text(
               'Statistics',
               style: TextStyle(
@@ -229,17 +271,20 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 StatCard(
                   title: 'Attempts',
-                  value: attempts.toString(),
+                  value:
+                  attempts.toString(),
                   icon: Icons.repeat,
                 ),
                 StatCard(
                   title: 'Highest',
-                  value: highestScore.toString(),
+                  value:
+                  highestScore.toString(),
                   icon: Icons.star,
                 ),
                 StatCard(
                   title: 'Last',
-                  value: lastScore.toString(),
+                  value:
+                  lastScore.toString(),
                   icon: Icons.history,
                 ),
               ],
@@ -247,7 +292,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 24),
 
-            // Categories
             const Text(
               'Categories',
               style: TextStyle(
@@ -259,42 +303,40 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 12),
 
-            GridView.builder(
-              shrinkWrap: true,
-              physics:
-              const NeverScrollableScrollPhysics(),
-              itemCount:
-              quizCategories.length,
-              gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.1,
-              ),
-              itemBuilder:
-                  (context, index) {
-                final category =
-                quizCategories[index];
+            SizedBox(
+              height: 180,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: quizCategories.length,
+                itemBuilder: (context, index) {
+                  final category = quizCategories[index];
 
-                return CategoryCard(
-                  title: category.name,
-                  icon: category.icon,
-                  questionCount:
-                  category.questions.length,
-                  onTap: () {
-                    context.push(
-                      '/quiz',
-                      extra: category,
-                    );
-                  },
-                );
-              },
+                  return Padding(
+                    padding: const EdgeInsets.only(
+                      right: 12,
+                    ),
+                    child: SizedBox(
+                      width: 220,
+                      child: CategoryCard(
+                        title: category.name,
+                        icon: category.icon,
+                        questionCount:
+                        category.questions.length,
+                        onTap: () {
+                          context.push(
+                            '/quiz',
+                            extra: category,
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
 
             const SizedBox(height: 24),
 
-            // History
             const Text(
               'Recent History',
               style: TextStyle(
@@ -310,17 +352,21 @@ class _HomeScreenState extends State<HomeScreen> {
               Card(
                 child: Padding(
                   padding:
-                  const EdgeInsets.all(20),
+                  const EdgeInsets
+                      .all(20),
                   child: Column(
                     children: [
                       Icon(
-                        Icons.quiz_outlined,
+                        Icons
+                            .quiz_outlined,
                         size: 50,
-                        color: Theme.of(context)
+                        color: Theme.of(
+                            context)
                             .colorScheme
                             .primary,
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(
+                          height: 10),
                       const Text(
                         'No quiz attempts yet.',
                       ),
@@ -329,15 +375,56 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-            ...history.map(
-                  (item) => Card(
-                child: ListTile(
-                  leading:
-                  const Icon(Icons.quiz),
-                  title: Text(item),
-                ),
-              ),
-            ),
+            ...history.map((item) {
+              try {
+                final data =
+                jsonDecode(item);
+
+                return Card(
+                  child: ListTile(
+                    leading:
+                    CircleAvatar(
+                      child: Text(
+                        data['score']
+                            .toString(),
+                      ),
+                    ),
+                    title: Text(
+                      data['category'],
+                    ),
+                    subtitle: Text(
+                      'Score: ${data['score']}/${data['total']}',
+                    ),
+                    trailing:
+                    const Icon(
+                      Icons
+                          .arrow_forward_ios,
+                      size: 18,
+                    ),
+                    onTap: () {
+                      context.push(
+                        '/history',
+                        extra: data,
+                      );
+                    },
+                  ),
+                );
+              } catch (e) {
+                return Card(
+                  child: ListTile(
+                    leading:
+                    const Icon(
+                      Icons.quiz,
+                    ),
+                    title: Text(item),
+                    subtitle:
+                    const Text(
+                      'Old Quiz Record',
+                    ),
+                  ),
+                );
+              }
+            }),
           ],
         ),
       ),
