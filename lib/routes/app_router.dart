@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 
+import '../models/quiz_category.dart';
 import '../screens/home_screen.dart';
 import '../screens/quiz_screen.dart';
 import '../screens/result_screen.dart';
@@ -21,13 +22,12 @@ final router = GoRouter(
       path: '/result',
       builder: (_, state) {
         final data =
-        state.extra
-        as Map<String, dynamic>;
+        state.extra as Map<String, dynamic>;
 
         return ResultScreen(
           score: data['score'],
-          totalQuestions:
-          data['total'],
+          totalQuestions: data['total'],
+          category: data['category'],
         );
       },
     ),

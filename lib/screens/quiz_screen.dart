@@ -46,8 +46,8 @@ class _QuizScreenState
         '/result',
         extra: {
           'score': score,
-          'total': widget
-              .category.questions.length,
+          'total': widget.category.questions.length,
+          'category': widget.category,
         },
       );
     }
